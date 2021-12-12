@@ -44,7 +44,10 @@ class GuildMusicPlayer:
 
     async def queue_song(self, context, song_metadata):
         title = song_metadata['title']
-        source = song_metadata['formats'][0]['url']
+        quality = -1
+        for song_format in song_metadata['formats']:
+            if "quality" in song_format.keys() and song_format['quality'] > quality:
+                source = song_format['url']
         await self.song_queue.put(Song(context, title, source, context.message.author))
 
     async def play_next_song(self):

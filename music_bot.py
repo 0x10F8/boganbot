@@ -21,11 +21,16 @@ class BoganBot(Bot):
 
     def __init__(self, command_prefix="!"):
         super().__init__(command_prefix)
-        self.add_command(Command(self.join, name="join", aliases=["j"], pass_context=True))
-        self.add_command(Command(self.play, name="play", aliases=["p"], pass_context=True))
-        self.add_command(Command(self.skip, name="skip", aliases=["s"], pass_context=True))
-        self.add_command(Command(self.clear, name="clear", aliases=["c"], pass_context=True))
-        self.add_command(Command(self.list, name="list", aliases=["l"], pass_context=True))
+        self.add_command(Command(self.join, name="join",
+                         aliases=["j"], pass_context=True))
+        self.add_command(Command(self.play, name="play",
+                         aliases=["p"], pass_context=True))
+        self.add_command(Command(self.skip, name="skip",
+                         aliases=["s"], pass_context=True))
+        self.add_command(Command(self.clear, name="clear",
+                         aliases=["c"], pass_context=True))
+        self.add_command(Command(self.list, name="list",
+                         aliases=["l"], pass_context=True))
 
     async def on_ready(self):
         for guild in self.guilds:
@@ -59,13 +64,13 @@ class BoganBot(Bot):
             connected = True
         return connected
 
-    async def play(self, context):
+    async def play(self, context, song_name):
         if await self.join(context):
             guild = context.message.guild
             argument_string = context.message.content.replace(
                 context.prefix+context.command.name+" ", "")
-            if argument_string is not None and len(argument_string.strip()) > 0:
-                song_metadata = await self.get_song_metadata(argument_string)
+            if song_name is not None and len(song_name.strip()) > 0:
+                song_metadata = await self.get_song_metadata(song_name)
                 songname = song_metadata['title']
                 caller = context.message.author
                 guild_player = self.guild_music_players[guild]
