@@ -28,6 +28,16 @@ class GuildMusicPlayer:
     def get_queue_size(self):
         return self.song_queue.qsize()
 
+    def list_song_queue(self, no_of_tracks=5):
+        i = 0
+        song_list = []
+        for item in list(self.song_queue._queue):
+            i += 1
+            song_list.append(item)
+            if i >= no_of_tracks:
+                break
+        return song_list
+
     async def clear_queue(self):
         while not self.song_queue.empty():
             await self.song_queue.get()

@@ -25,6 +25,7 @@ class BoganBot(Bot):
         self.add_command(Command(self.play, name="play", pass_context=True))
         self.add_command(Command(self.skip, name="skip", pass_context=True))
         self.add_command(Command(self.clear, name="clear", pass_context=True))
+        self.add_command(Command(self.list, name="list", pass_context=True))
 
     async def on_ready(self):
         for guild in self.guilds:
@@ -104,6 +105,20 @@ class BoganBot(Bot):
                 print("[{0}] cleared the queue in server {1}".format(
                     caller, guild.name))
                 await guild_player.clear_queue()
+
+    async def list(self, context):
+        caller = context.message.author
+        guild = context.message.guild
+        guild_player = self.guild_music_players[guild]
+        songs_to_list = 5
+        song_list = guild_player.list_song_queue(songs_to_list)
+        playlist_message = ""
+        i = 1
+        for song in song_list:
+            playlist_message += "{0}. {1}\n".format(i, song.title)
+        await self.embed_message(context, "Current Playlist",
+                                 (playlist_message+"\n\nThere are currently **{1}** tracks queued."
+                                  .format(caller.mention, guild_player.get_queue_size())))
 
     async def embed_message(self, context, title, message):
         embed = Embed(title=title,
