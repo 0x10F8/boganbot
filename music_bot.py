@@ -94,8 +94,7 @@ class BoganBot(Bot):
         if song_name.startswith(self.SPOTIFY_TRACK_URL):
             print("[{0}] searched for {1} which appears to be a spotify track on server [{2}]".format(
                 caller, song_name, guild.name))
-            spotify_track = self.spotify.track(
-                "https://open.spotify.com/track/2QpFxUbp9cAOI7YfFBEvQ9")
+            spotify_track = self.spotify.track(song_name)
             artist = spotify_track['artists'][0]['name']
             track_name = spotify_track['name']
             song_name = "{0} {1}".format(artist, track_name)
