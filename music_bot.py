@@ -136,6 +136,7 @@ class BoganBot(Bot):
         i = 1
         for song in song_list:
             playlist_message += "{0}. {1}\n".format(i, song.title)
+            i += 1
         await self.embed_message(context, "Current Playlist",
                                  (playlist_message+"\n\nThere are currently **{1}** tracks queued."
                                   .format(caller.mention, guild_player.get_queue_size())))
