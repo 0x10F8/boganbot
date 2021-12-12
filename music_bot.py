@@ -64,7 +64,8 @@ class BoganBot(Bot):
             connected = True
         return connected
 
-    async def play(self, context, song_name):
+    async def play(self, context, *song_search):
+        song_name = " ".join(song_search)
         if await self.join(context):
             guild = context.message.guild
             argument_string = context.message.content.replace(
