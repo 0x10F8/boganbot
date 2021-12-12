@@ -42,13 +42,21 @@ class GuildMusicPlayer:
         while not self.song_queue.empty():
             await self.song_queue.get()
 
-    async def queue_song(self, context, song_metadata):
-        title = song_metadata['title']
+    def find_best_audio_source(self, song_metadata):
+        source = None
         quality = -1
         for song_format in song_metadata['formats']:
-            if "quality" in song_format.keys() and song_format['quality'] > quality:
+            if "quality" in song_format.keys() and song_format['quality'] > quality and song_format['acodec'] == 'opus':
                 source = song_format['url']
-        await self.song_queue.put(Song(context, title, source, context.message.author))
+        return source
+
+    async def queue_song(self, context, song_metadata):
+        title = song_metadata['title']
+        source = self.find_best_audio_source(song_metadata)
+        if source is not None:
+            await self.song_queue.put(Song(context, title, source, context.message.author))
+        else:
+            await self.embed_message(context, "Sorry", "Sorry {0} there was an issue loading the song {1}".format(context.message.author.mention, title))
 
     async def play_next_song(self):
         while True:
