@@ -1,6 +1,5 @@
 import asyncio
 from discord import Embed, Color, FFmpegPCMAudio
-import youtube_dl
 import dotenv
 import os
 
