@@ -8,6 +8,7 @@ import youtube_dl
 class BoganBot(Bot):
     guild_music_players = {}
     youtube_info_downloader = youtube_dl.YoutubeDL({
+        'format': 'bestaudio/best',
         'noplaylist': True,
         'nocheckcertificate': True,
         'ignoreerrors': False,
