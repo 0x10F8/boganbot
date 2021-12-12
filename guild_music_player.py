@@ -17,7 +17,7 @@ class Song:
 
 class GuildMusicPlayer:
 
-    FF_MPEG = os.getenv("ffmpeg_exe")
+    FF_MPEG = os.getenv("FFMPEG")
 
     def __init__(self, guild, bot):
         self.guild = guild

@@ -4,7 +4,7 @@ import os
 
 dotenv.load_dotenv()
 
-DISCORD_TOKEN = os.getenv("discord_token")
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = BoganBot(command_prefix="!")
 bot.run(DISCORD_TOKEN)

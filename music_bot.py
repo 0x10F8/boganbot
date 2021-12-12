@@ -3,6 +3,11 @@ from discord.ext.commands import Bot
 from discord.ext.commands.core import Command
 from guild_music_player import GuildMusicPlayer
 import youtube_dl
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+import dotenv
+
+dotenv.load_dotenv()
 
 
 class BoganBot(Bot):
@@ -18,6 +23,10 @@ class BoganBot(Bot):
         'default_search': 'auto',
         'source_address': '0.0.0.0',
     })
+    spotify_auth_manager = SpotifyClientCredentials()
+    spotify = spotipy.Spotify(auth_manager=spotify_auth_manager)
+
+    SPOTIFY_TRACK_URL = "https://open.spotify.com/track/"
 
     def __init__(self, command_prefix="!"):
         super().__init__(command_prefix)
@@ -80,14 +89,23 @@ class BoganBot(Bot):
 
     async def play(self, context, *song_search):
         song_name = " ".join(song_search)
+        caller = context.message.author
+        guild = context.message.guild
+        if song_name.startswith(self.SPOTIFY_TRACK_URL):
+            print("[{0}] searched for {1} which appears to be a spotify track on server [{2}]".format(
+                caller, song_name, guild.name))
+            spotify_track = self.spotify.track(
+                "https://open.spotify.com/track/2QpFxUbp9cAOI7YfFBEvQ9")
+            artist = spotify_track['artists'][0]['name']
+            track_name = spotify_track['name']
+            song_name = "{0} {1}".format(artist, track_name)
+            print("Found actual song name {0}".format(song_name))
         if await self.join(context):
-            guild = context.message.guild
             argument_string = context.message.content.replace(
                 context.prefix+context.command.name+" ", "")
             if song_name is not None and len(song_name.strip()) > 0:
                 song_metadata = await self.get_song_metadata(song_name)
                 songname = song_metadata['title']
-                caller = context.message.author
                 guild_player = self.guild_music_players[guild]
                 await guild_player.queue_song(context, song_metadata)
                 if guild.voice_client.is_playing():
