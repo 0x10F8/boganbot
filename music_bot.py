@@ -32,7 +32,7 @@ class BoganBot(Bot):
         self.add_command(Command(self.list, name="list",
                          aliases=["l"], brief="List the next songs in the queue.", pass_context=True))
         self.add_command(Command(self.commands, name="commands",
-                         aliases=["c"], brief="Show the commands list.", pass_context=True))
+                         brief="Show the commands list.", pass_context=True))
 
     async def commands(self, context):
         commands_message = "The following commands are available:"
