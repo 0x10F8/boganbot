@@ -38,6 +38,8 @@ class BoganBot(Bot):
         commands_message = "The following commands are available:"
         for command_name in self.all_commands:
             command = self.get_command(command_name)
+            if command_name in command.aliases:
+                continue
             command_aliases = [self.command_prefix +
                                alias for alias in command.aliases]
             commands_message += "\n{0}{1} (aliases: {2}) - {3}".format(
