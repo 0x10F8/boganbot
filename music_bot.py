@@ -66,12 +66,12 @@ class BoganBot(Bot):
                 songname = song_metadata['title']
                 caller = context.message.author
                 guild_player = self.guild_music_players[guild]
+                await guild_player.queue_song(context, song_metadata)
                 await self.embed_message(context, "Song Queued",
                                          ("{0} queued {1}.\n\nThere are currently **{2}** tracks queued."
                                           .format(caller.mention, songname, guild_player.get_queue_size())))
                 print("[{0}] queued up {1} with '{2}' for server [{3}]".format(
                     caller, songname, argument_string, guild.name))
-                await guild_player.queue_song(context, song_metadata)
 
     async def skip(self, context):
         caller = context.message.author
