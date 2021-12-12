@@ -21,11 +21,11 @@ class BoganBot(Bot):
 
     def __init__(self, command_prefix="!"):
         super().__init__(command_prefix)
-        self.add_command(Command(self.join, name="join", pass_context=True))
-        self.add_command(Command(self.play, name="play", pass_context=True))
-        self.add_command(Command(self.skip, name="skip", pass_context=True))
-        self.add_command(Command(self.clear, name="clear", pass_context=True))
-        self.add_command(Command(self.list, name="list", pass_context=True))
+        self.add_command(Command(self.join, name="join", aliases=["j"], pass_context=True))
+        self.add_command(Command(self.play, name="play", aliases=["p"], pass_context=True))
+        self.add_command(Command(self.skip, name="skip", aliases=["s"], pass_context=True))
+        self.add_command(Command(self.clear, name="clear", aliases=["c"], pass_context=True))
+        self.add_command(Command(self.list, name="list", aliases=["l"], pass_context=True))
 
     async def on_ready(self):
         for guild in self.guilds:
