@@ -43,11 +43,12 @@ class BoganBot(Bot):
             self.user, guild.name))
 
     async def join(self, context):
-        voice_info = context.message.author.voice
+        message_author = context.message.author
+        voice_info = message_author.voice
         guild = context.message.guild
         connected = False
         if not voice_info:
-            await context.send("{0} you need to be in a voice channel for the bot to join.")
+            await context.send("{0} you need to be in a voice channel for the bot to join.".format(message_author.mention))
         else:
             voice_channel = voice_info.channel
             if not guild.voice_client or \
@@ -67,9 +68,10 @@ class BoganBot(Bot):
                 caller = context.message.author
                 guild_player = self.guild_music_players[guild]
                 await guild_player.queue_song(context, song_metadata)
-                await self.embed_message(context, "Song Queued",
-                                         ("{0} queued {1}.\n\nThere are currently **{2}** tracks queued."
-                                          .format(caller.mention, songname, guild_player.get_queue_size())))
+                if guild.voice_client.is_playing():
+                    await self.embed_message(context, "Song Queued",
+                                             ("{0} queued {1}.\n\nThere are currently **{2}** tracks queued."
+                                              .format(caller.mention, songname, guild_player.get_queue_size())))
                 print("[{0}] queued up {1} with '{2}' for server [{3}]".format(
                     caller, songname, argument_string, guild.name))
 
