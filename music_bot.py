@@ -27,6 +27,7 @@ class BoganBot(Bot):
     spotify = spotipy.Spotify(auth_manager=spotify_auth_manager)
 
     SPOTIFY_TRACK_URL = "https://open.spotify.com/track/"
+    SPOTIFY_PLAYLIST_URL = "https://open.spotify.com/playlist/"
 
     def __init__(self, command_prefix="!"):
         super().__init__(command_prefix)
@@ -87,32 +88,67 @@ class BoganBot(Bot):
             connected = True
         return connected
 
+    async def play_playlist(self, context, song_name):
+        caller = context.message.author
+        guild = context.message.guild
+        tracks = []
+        playlist_name = ""
+        if song_name.startswith(self.SPOTIFY_PLAYLIST_URL):
+            print("[{0}] searched for {1} which appears to be a spotify playlist on server [{2}]".format(
+            caller, song_name, guild.name))
+            spotify_playlist = self.spotify.playlist(song_name)
+            playlist_name = spotify_playlist['name']
+            spotify_tracks = spotify_playlist['tracks']['items']
+            for spotify_track in spotify_tracks:
+                spotify_track = spotify_track['track']
+                artist = spotify_track['artists'][0]['name']
+                track_name = spotify_track['name']
+                tracks.append("{0} {1}".format(artist, track_name))
+        if await self.join(context):
+            argument_string = context.message.content.replace(
+                context.prefix+context.command.name+" ", "")
+            if len(tracks) > 0:
+                for track in tracks:
+                    song_metadata = await self.get_song_metadata(track)
+                    guild_player = self.guild_music_players[guild]
+                    await guild_player.queue_song(context, song_metadata)
+                if guild.voice_client.is_playing():
+                    await self.embed_message(context, "Playlist Queued",
+                                            ("{0} queued {1}.\n\nThere are currently **{2}** tracks queued."
+                                            .format(caller.mention, playlist_name, guild_player.get_queue_size())))
+                print("[{0}] queued up {1} with '{2}' for server [{3}]".format(
+                    caller, playlist_name, argument_string, guild.name))
+        
+
     async def play(self, context, *song_search):
         song_name = " ".join(song_search)
         caller = context.message.author
         guild = context.message.guild
-        if song_name.startswith(self.SPOTIFY_TRACK_URL):
-            print("[{0}] searched for {1} which appears to be a spotify track on server [{2}]".format(
-                caller, song_name, guild.name))
-            spotify_track = self.spotify.track(song_name)
-            artist = spotify_track['artists'][0]['name']
-            track_name = spotify_track['name']
-            song_name = "{0} {1}".format(artist, track_name)
-            print("Found actual song name {0}".format(song_name))
-        if await self.join(context):
-            argument_string = context.message.content.replace(
-                context.prefix+context.command.name+" ", "")
-            if song_name is not None and len(song_name.strip()) > 0:
-                song_metadata = await self.get_song_metadata(song_name)
-                songname = song_metadata['title']
-                guild_player = self.guild_music_players[guild]
-                await guild_player.queue_song(context, song_metadata)
-                if guild.voice_client.is_playing():
-                    await self.embed_message(context, "Song Queued",
-                                             ("{0} queued {1}.\n\nThere are currently **{2}** tracks queued."
-                                              .format(caller.mention, songname, guild_player.get_queue_size())))
-                print("[{0}] queued up {1} with '{2}' for server [{3}]".format(
-                    caller, songname, argument_string, guild.name))
+        if song_name.startswith(self.SPOTIFY_PLAYLIST_URL):
+            await self.play_playlist(context, song_name)
+        else:
+            if song_name.startswith(self.SPOTIFY_TRACK_URL):
+                print("[{0}] searched for {1} which appears to be a spotify track on server [{2}]".format(
+                    caller, song_name, guild.name))
+                spotify_track = self.spotify.track(song_name)
+                artist = spotify_track['artists'][0]['name']
+                track_name = spotify_track['name']
+                song_name = "{0} {1}".format(artist, track_name)
+                print("Found actual song name {0}".format(song_name))
+            if await self.join(context):
+                argument_string = context.message.content.replace(
+                    context.prefix+context.command.name+" ", "")
+                if song_name is not None and len(song_name.strip()) > 0:
+                    song_metadata = await self.get_song_metadata(song_name)
+                    songname = song_metadata['title']
+                    guild_player = self.guild_music_players[guild]
+                    await guild_player.queue_song(context, song_metadata)
+                    if guild.voice_client.is_playing():
+                        await self.embed_message(context, "Song Queued",
+                                                 ("{0} queued {1}.\n\nThere are currently **{2}** tracks queued."
+                                                  .format(caller.mention, songname, guild_player.get_queue_size())))
+                    print("[{0}] queued up {1} with '{2}' for server [{3}]".format(
+                        caller, songname, argument_string, guild.name))
 
     async def skip(self, context):
         caller = context.message.author
