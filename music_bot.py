@@ -43,6 +43,8 @@ class BoganBot(Bot):
                          aliases=["l"], brief="List the next songs in the queue.", pass_context=True))
         self.add_command(Command(self.commands, name="commands",
                          brief="Show the commands list.", pass_context=True))
+        self.add_command(Command(self.move, name="move",
+                         aliases=["m"], brief="Move the bot to your channel.", pass_context=True))
 
     async def commands(self, context):
         commands_message = "The following commands are available:"
@@ -85,6 +87,23 @@ class BoganBot(Bot):
             if not guild.voice_client or \
                     (guild.voice_client and not guild.voice_client.is_connected()):
                 await voice_channel.connect()
+            connected = True
+        return connected
+
+    async def move(self, context):
+        message_author = context.message.author
+        voice_info = message_author.voice
+        guild = context.message.guild
+        connected = False
+        if not voice_info:
+            await context.send("{0} you need to be in a voice channel for the bot to join.".format(message_author.mention))
+        else:
+            voice_channel = voice_info.channel
+            if not guild.voice_client or \
+                    (guild.voice_client and not guild.voice_client.is_connected()):
+                await voice_channel.connect()
+            else:
+                await guild.voice_client.move_to(voice_channel)
             connected = True
         return connected
 
