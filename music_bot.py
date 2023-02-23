@@ -2,7 +2,7 @@ from discord import Embed, Color
 from discord.ext.commands import Bot
 from discord.ext.commands.core import Command
 from guild_music_player import GuildMusicPlayer
-import youtube_dl
+import yt_dlp as youtube_dl
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import dotenv
