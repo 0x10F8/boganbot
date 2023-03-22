@@ -29,8 +29,8 @@ class BoganBot(Bot):
     SPOTIFY_TRACK_URL = "https://open.spotify.com/track/"
     SPOTIFY_PLAYLIST_URL = "https://open.spotify.com/playlist/"
 
-    def __init__(self, command_prefix="!"):
-        super().__init__(command_prefix)
+    def __init__(self, command_prefix="!", intents=None):
+        super().__init__(command_prefix, intents=intents)
         self.add_command(Command(self.join, name="join",
                                  aliases=["j"], brief="Tell the bot to join your current voice channel.", pass_context=True))
         self.add_command(Command(self.play, name="play",
