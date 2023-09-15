@@ -1,5 +1,5 @@
 import asyncio
-from discord import Embed, Color, FFmpegPCMAudio
+from discord import Embed, Color, FFmpegOpusAudio
 import dotenv
 import os
 
@@ -47,7 +47,6 @@ class GuildMusicPlayer:
         asr = -1
         for song_format in song_metadata['formats']:
             if "asr" in song_format.keys() and song_format['asr'] is not None and song_format['asr'] > asr and song_format['acodec'] == 'opus':
-                print("Playing with format: " + str(song_format))
                 source = song_format['url']
         return source
 
@@ -69,8 +68,10 @@ class GuildMusicPlayer:
             await self.embed_message(song.context, "Now Playing...",
                                      "Now playing {0} - queued by {1}.\n\nThere are currently **{2}** tracks queued."
                                      .format(song.title, song.queued_by.mention, self.get_queue_size()))
-            voice_client.play(FFmpegPCMAudio(
-                executable=self.FF_MPEG, source=song.source), after=self.go_to_next_song)
+            FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+            voice_client.play(
+                FFmpegOpusAudio(executable=self.FF_MPEG, source=song.source, **FFMPEG_OPTS),
+                after=self.go_to_next_song)
             await self.next_song_event.wait()
 
     async def embed_message(self, context, title, message):
