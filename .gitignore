@@ -1,5 +1,7 @@
 scratch.py
 
+.env
+
 # ffmpeg
 ffmpeg.exe
 
