@@ -44,9 +44,10 @@ class GuildMusicPlayer:
 
     def find_best_audio_source(self, song_metadata):
         source = None
-        quality = -1
+        asr = -1
         for song_format in song_metadata['formats']:
-            if "quality" in song_format.keys() and song_format['quality'] > quality and song_format['acodec'] == 'opus':
+            if "asr" in song_format.keys() and song_format['asr'] is not None and song_format['asr'] > asr and song_format['acodec'] == 'opus':
+                print("Playing with format: " + str(song_format))
                 source = song_format['url']
         return source
 

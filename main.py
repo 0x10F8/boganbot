@@ -125,7 +125,6 @@ async def play_playlist(context, song_name):
 @bot.command(name="play", aliases=["p"], brief="Play the requested song.")
 async def play(context, *song_search):
     song_name = " ".join(song_search)
-    context.send('test')
     caller = context.message.author
     guild = context.message.guild
     if song_name.startswith(SPOTIFY_PLAYLIST_URL):
