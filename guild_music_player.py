@@ -8,11 +8,12 @@ dotenv.load_dotenv()
 
 class Song:
 
-    def __init__(self, context, title, source, queue_by):
+    def __init__(self, context, title, source, queue_by, image_url):
         self.context = context
         self.title = title
         self.source = source
         self.queued_by = queue_by
+        self.image_url = image_url
 
 
 class GuildMusicPlayer:
@@ -53,8 +54,9 @@ class GuildMusicPlayer:
     async def queue_song(self, context, song_metadata):
         title = song_metadata['title']
         source = self.find_best_audio_source(song_metadata)
+        image_url = song_metadata['thumbnail']
         if source is not None:
-            await self.song_queue.put(Song(context, title, source, context.message.author))
+            await self.song_queue.put(Song(context, title, source, context.message.author, image_url))
         else:
             await self.embed_message(context, "Sorry", "Sorry {0} there was an issue loading the song {1}".format(context.message.author.mention, title))
 
@@ -67,17 +69,21 @@ class GuildMusicPlayer:
                 song.title, self.guild.name))
             await self.embed_message(song.context, "Now Playing...",
                                      "Now playing {0} - queued by {1}.\n\nThere are currently **{2}** tracks queued."
-                                     .format(song.title, song.queued_by.mention, self.get_queue_size()))
+                                     .format(song.title, song.queued_by.mention, self.get_queue_size()),
+                                     song.image_url)
             FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
             voice_client.play(
                 FFmpegOpusAudio(executable=self.FF_MPEG, source=song.source, **FFMPEG_OPTS),
                 after=self.go_to_next_song)
             await self.next_song_event.wait()
 
-    async def embed_message(self, context, title, message):
+    async def embed_message(self, context, title, message, image_url=None):
         embed = Embed(title=title,
                       description=message,
-                      color=Color.blue())
+                      color=Color.blue(),
+                      )
+        if image_url:
+            embed.set_image(url=image_url)
         await context.send(embed=embed)
 
     def go_to_next_song(self, error=None):
