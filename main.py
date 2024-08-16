@@ -29,6 +29,7 @@ youtube_info_downloader = youtube_dl.YoutubeDL({
     'no_warnings': True,
     'default_search': 'auto',
     'source_address': '0.0.0.0',
+    'cookiefile': os.getenv("COOKIE_FILE")
 })
 spotify_auth_manager = SpotifyClientCredentials()
 spotify = spotipy.Spotify(auth_manager=spotify_auth_manager)
