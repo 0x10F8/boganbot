@@ -13,6 +13,8 @@ dotenv.load_dotenv()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
+print(DISCORD_TOKEN)
+
 intents = discord.Intents.default()
 intents.message_content = True
 
@@ -28,8 +30,7 @@ youtube_info_downloader = youtube_dl.YoutubeDL({
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '0.0.0.0',
-    'cookiefile': os.getenv("COOKIE_FILE")
+    'source_address': '0.0.0.0'
 })
 spotify_auth_manager = SpotifyClientCredentials()
 spotify = spotipy.Spotify(auth_manager=spotify_auth_manager)
